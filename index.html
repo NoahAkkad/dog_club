@@ -4,11 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="script.js">
-    <title>Dog Club</title>
+    <title>Login Page</title>
 </head>
 <body>
-    
-    
+    <header>
+        <h1>Dogs Club</h1>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Our Services</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </header>
+    <main>
+        <div id="login-form">
+            <h2>Login</h2>
+            <div class="form__input">
+               <input type="text" id="username" autofocus placeholder="Enter your username" required> 
+            </div>
+            <div class="form__input">
+              <input type="password" id="password" placeholder="Enter your password" required>  
+            </div>
+            <button id="login-button">Log In</button>
+            <button id="logout-button">Log Out</button>
+            <div id="login-message"></div>
+            <div id="error-message"></div>
+        </div>
+    </main>
+    <footer>
+        <p>Rules of the Association:</p>
+        <p id="association-rules"></p>
+    </footer>
+    <script src="script.js"></script>
 </body>
 </html>

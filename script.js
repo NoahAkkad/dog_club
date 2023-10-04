@@ -35,7 +35,7 @@ function showLogoutButton() {
     setLoggedInStatus(true);
     logoutButton.style.display = 'block';
     loginButton.style.display = 'none';
-    loginMessage.textContent = 'Welcome, you are now logged in';
+    loginMessage.textContent = 'Welcome Bella, you are now logged in.';
 }
 
 // Function to handle logout

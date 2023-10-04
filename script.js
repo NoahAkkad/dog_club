@@ -1,4 +1,4 @@
-// Retrieve elements from the HTML document
+// Basic variables for elements
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
 const loginButton = document.getElementById('login-button');
@@ -7,25 +7,18 @@ const logoutButton = document.getElementById('logout-button');
 const errorMessage = document.getElementById('error-message');
 const associationRules = document.getElementById('association-rules');
 
-// Set constant variables for username and password
+// Constants for correct username and password
 const correctUsername = 'Bella';
 const correctPassword = 'qwe123';
 
-// Function to show the incorrect login message and retry button
-function showIncorrectLoginMessage() {
-    errorMessage.textContent = 'Login failed. Please try again.';
-    const retryButton = document.createElement('button');
-    retryButton.className = 'button';
-    retryButton.textContent = 'Retry';
-    retryButton.addEventListener('click', () => {
-        errorMessage.textContent = '';
-        usernameInput.value = '';
-        passwordInput.value = '';
-        if (retryButton.parentNode) {
-            retryButton.parentNode.removeChild(retryButton); // Remove the retry button
-        }
-    });
-    loginMessage.appendChild(retryButton);
+// Function to set login status in local storage
+function setLoggedInStatus(status) {
+    localStorage.setItem('isLoggedIn', status ? 'true' : 'false');
+}
+
+// Function to get login status from local storage
+function getLoggedInStatus() {
+    return localStorage.getItem('isLoggedIn') === 'true';
 }
 
 // Function to show the login form
@@ -33,38 +26,13 @@ function showLoginForm() {
     loginMessage.textContent = '';
     logoutButton.style.display = 'none';
     loginButton.style.display = 'block';
-    usernameInput.style.display = 'block'; // Show the username field
-    passwordInput.style.display = 'block'; // Show the password field
-}
-
-// Function to handle login attempts
-function handleLogin() {
-    const enteredUsername = usernameInput.value;
-    const enteredPassword = passwordInput.value;
-
-    if (enteredUsername === correctUsername && enteredPassword === correctPassword) {
-        // Successful login
-        localStorage.setItem('isLoggedIn', 'true');
-        showLogoutButton();
-        usernameInput.value = ''; // Clear the username field
-        passwordInput.value = ''; // Clear the password field
-        errorMessage.textContent = ''; // Clear the error message
-        const retryButton = document.getElementById('retry-button');
-        if (retryButton) {
-            retryButton.remove(); // Remove the retry button if it exists
-        }
-        // Hide the username and password fields
-        usernameInput.style.display = 'none';
-        passwordInput.style.display = 'none';
-    } else {
-        // Incorrect login
-        showIncorrectLoginMessage();
-    }
+    usernameInput.style.display = 'block';
+    passwordInput.style.display = 'block';
 }
 
 // Function to show the logout button
 function showLogoutButton() {
-    localStorage.setItem('isLoggedIn', 'true');
+    setLoggedInStatus(true);
     logoutButton.style.display = 'block';
     loginButton.style.display = 'none';
     loginMessage.textContent = 'Welcome, you are now logged in';
@@ -72,32 +40,69 @@ function showLogoutButton() {
 
 // Function to handle logout
 function handleLogout() {
-    localStorage.setItem('isLoggedIn', 'false');
+    setLoggedInStatus(false);
     showLoginForm();
 }
 
-// Check if the user is already logged in
-const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+// Function to initialize the login state
+function initializeLoginState() {
+    const isLoggedIn = getLoggedInStatus();
 
-// Add event listeners
-loginButton.addEventListener('click', () => {
     if (isLoggedIn) {
-        // If already logged in, log out
-        handleLogout();
+        usernameInput.style.display = 'none';
+        passwordInput.style.display = 'none';
+        showLogoutButton();
+
     } else {
-        // If not logged in, attempt login
-        handleLogin();
+        showLoginForm();
     }
+}
+
+// Check and initialize login state
+initializeLoginState();
+
+// Add an event listener to the login button
+loginButton.addEventListener('click', () => {
+    verifyLogin();
 });
 
-logoutButton.addEventListener('click', handleLogout);
+// Function to verify login credentials
+function verifyLogin() {
+    const enteredUsername = usernameInput.value;
+    const enteredPassword = passwordInput.value;
 
-// Check if user is already logged in and act accordingly
-if (isLoggedIn) {
-    showLogoutButton();
-} else {
-    showLoginForm();
+    if (enteredUsername === correctUsername && enteredPassword === correctPassword) {
+        // Successful login
+        setLoggedInStatus(true);
+        showLogoutButton();
+        loginMessage.textContent = 'Welcome, you are now logged in.';
+        errorMessage.textContent = '';
+        // Hide username and password inputs after successful login
+        usernameInput.style.display = 'none';
+        passwordInput.style.display = 'none';
+    } else {
+        // Incorrect login
+        setLoggedInStatus(false);
+        loginMessage.textContent = '';
+        errorMessage.textContent = 'Login failed. Please try again.';
+        if (!document.getElementById('retry-button')) {
+            const retryButton = document.createElement('button');
+            retryButton.id = 'retry-button';
+            retryButton.className = 'button';
+            retryButton.textContent = 'Retry';
+            retryButton.addEventListener('click', () => {
+                errorMessage.textContent = '';
+                usernameInput.value = '';
+                passwordInput.value = '';
+                retryButton.style.display = 'none';
+            });
+            loginMessage.appendChild(retryButton);
+        }
+    }
 }
+
+// Add an event listener to the logout button
+logoutButton.addEventListener('click', handleLogout);
 
 // Display association rules text
 associationRules.textContent = `

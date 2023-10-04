@@ -11,14 +11,6 @@ const associationRules = document.getElementById('association-rules');
 const correctUsername = 'Bella';
 const correctPassword = 'qwe123';
 
-// Check if the user is already logged in
-const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-
-// Set isLoggedIn to false by default if it's not set in localStorage
-if (isLoggedIn === null) {
-    localStorage.setItem('isLoggedIn', 'false');
-}
-
 // Function to show the incorrect login message and retry button
 function showIncorrectLoginMessage() {
     errorMessage.textContent = 'Login failed. Please try again.';
@@ -29,16 +21,20 @@ function showIncorrectLoginMessage() {
         errorMessage.textContent = '';
         usernameInput.value = '';
         passwordInput.value = '';
-        showLoginForm();
+        if (retryButton.parentNode) {
+            retryButton.parentNode.removeChild(retryButton); // Remove the retry button
+        }
     });
     loginMessage.appendChild(retryButton);
-    
 }
+
 // Function to show the login form
 function showLoginForm() {
     loginMessage.textContent = '';
     logoutButton.style.display = 'none';
     loginButton.style.display = 'block';
+    usernameInput.style.display = 'block'; // Show the username field
+    passwordInput.style.display = 'block'; // Show the password field
 }
 
 // Function to handle login attempts
@@ -49,26 +45,40 @@ function handleLogin() {
     if (enteredUsername === correctUsername && enteredPassword === correctPassword) {
         // Successful login
         localStorage.setItem('isLoggedIn', 'true');
-        loginMessage.textContent = 'Welcome, you are now logged in';
         showLogoutButton();
-        
+        usernameInput.value = ''; // Clear the username field
+        passwordInput.value = ''; // Clear the password field
+        errorMessage.textContent = ''; // Clear the error message
+        const retryButton = document.getElementById('retry-button');
+        if (retryButton) {
+            retryButton.remove(); // Remove the retry button if it exists
+        }
+        // Hide the username and password fields
+        usernameInput.style.display = 'none';
+        passwordInput.style.display = 'none';
     } else {
         // Incorrect login
         showIncorrectLoginMessage();
     }
 }
+
 // Function to show the logout button
 function showLogoutButton() {
+    localStorage.setItem('isLoggedIn', 'true');
     logoutButton.style.display = 'block';
     loginButton.style.display = 'none';
+    loginMessage.textContent = 'Welcome, you are now logged in';
 }
 
 // Function to handle logout
 function handleLogout() {
     localStorage.setItem('isLoggedIn', 'false');
     showLoginForm();
-    loginButton.textContent = 'Log In'; 
 }
+
+// Check if the user is already logged in
+const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
 // Add event listeners
 loginButton.addEventListener('click', () => {
     if (isLoggedIn) {
@@ -79,11 +89,12 @@ loginButton.addEventListener('click', () => {
         handleLogin();
     }
 });
+
 logoutButton.addEventListener('click', handleLogout);
 
 // Check if user is already logged in and act accordingly
 if (isLoggedIn) {
-    logoutButton();
+    showLogoutButton();
 } else {
     showLoginForm();
 }
